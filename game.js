@@ -1,4 +1,4 @@
-const socket = io(); // Connect to the server
+
 
 // Get the canvas and its context
 const canvas = document.getElementById('gameCanvas');
@@ -1543,6 +1543,7 @@ function gameLoop(timestamp) {
     if (isColliding(scorpion1, greenObject) && scorpion1.hasBall) {
         ball.visible = false; // Make the ball disappear
         scorpion1.score += 1; // Increment scorpion1's score
+        scorpion1.hasBall = false; // Reset hasBall to false
         updateScoreDisplay(); // Update the score display
         resetGame(); // Reset the game
         
@@ -1552,6 +1553,7 @@ function gameLoop(timestamp) {
     if (isColliding(scorpion2, yellowObject) && scorpion2.hasBall) {
         ball.visible = false; // Make the ball disappear
         scorpion2.score += 1; // Increment scorpion2's score
+        scorpion2.hasBall = false; // Reset hasBall to false
         updateScoreDisplay(); // Update the score display
         resetGame(); // Reset the game
     }
