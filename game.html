@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorpion Game</title>
+    <link rel="stylesheet" href="game.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Orbitron:wght@400..900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Silkscreen:wght@400;700&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <audio id="backgroundmusic" src="audio/background.mp3" loop></audio>
+    <h1>Scorpion Game</h1>
+    <canvas id="gameCanvas" width="1200" height="600" style="border:1px solid black;"></canvas>
+    <div id="scoreBox">
+            <div id="player1">
+                <p>Player 1</p>
+                <p id="player2score">0</p>
+            </div>
+            <div id="player2">
+                <p>Player 2</p>
+                <p id="player1score">0</p>
+            </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
