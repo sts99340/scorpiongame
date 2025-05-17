@@ -1,5 +1,3 @@
-
-
 // Get the canvas and its context
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -748,85 +746,69 @@ function updateBall() {
     }
 }
 
-// Event listener for the space key
+// Release ball (space for player 1, 0 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === ' ') { // Check if the space key is pressed
+    if (event.key === ' ' && playerId === 1) {
         releaseBall();
     }
-});
-
-// Event listener for the 0 key (scorpion2 shooting)
-document.addEventListener('keydown', (event) => {
-    if (event.key === '0') { // Check if the 0 key is pressed
+    if (event.key === '0' && playerId === 2) {
         releaseBallScorpion2();
     }
 });
 
-// Event listener for the Q key (scorpion1 dashing)
+// Dash (Q for player 1, 1 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'q' && scorpion1.visible) { // Check if scorpion1 is visible
+    if (event.key === 'q' && playerId === 1 && scorpion1.visible) {
         dashScorpion1();
     }
-});
-
-// Event listener for the 1 key (scorpion2 dashing)
-document.addEventListener('keydown', (event) => {
-    if (event.key === '1' && scorpion2.visible) { // Check if scorpion2 is visible
+    if (event.key === '1' && playerId === 2 && scorpion2.visible) {
         dashScorpion2();
     }
 });
 
-// Event listener for the E key (scorpion1 sends a wave)
+// Wave (E for player 1, 2 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'e' && scorpion1.visible) { // Check if scorpion1 is visible
+    if (event.key === 'e' && playerId === 1 && scorpion1.visible) {
         sendWave(scorpion1);
     }
-});
-
-// Event listener for the 2 key (scorpion2 sends a wave)
-document.addEventListener('keydown', (event) => {
-    if (event.key === '2' && scorpion2.visible) { // Check if scorpion2 is visible
+    if (event.key === '2' && playerId === 2 && scorpion2.visible) {
         sendWave(scorpion2);
     }
 });
 
-// Event listener for shooting bullets
+// Bullet (R for player 1, 3 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'r') { // Scorpion1 shoots a bullet
+    if (event.key === 'r' && playerId === 1) {
         sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
     }
-    if (event.key === '3') { // Scorpion2 shoots a bullet
+    if (event.key === '3' && playerId === 2) {
         sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
     }
 });
 
+
 // Function to update the scorpion's direction
 function updateScorpionDirection() {
-    let dx = 0;
-    let dy = 0;
-
-    if (keysPressed['w']) dy -= 1; // Move up
-    if (keysPressed['a']) dx -= 1; // Move left
-    if (keysPressed['s']) dy += 1; // Move down
-    if (keysPressed['d']) dx += 1; // Move right
-
+    if (playerId !== 1) return; // Only Player 1 controls scorpion1 direction
+    let dx = 0, dy = 0;
+    if (keysPressed['w']) dy -= 1;
+    if (keysPressed['a']) dx -= 1;
+    if (keysPressed['s']) dy += 1;
+    if (keysPressed['d']) dx += 1;
     if (dx !== 0 || dy !== 0) {
-        scorpion1.direction = Math.atan2(dy, dx); // Calculate angle in radians
+        scorpion1.direction = Math.atan2(dy, dx);
     }
 }
 
-// Function to update scorpion2's direction
 function updateScorpion2Direction() {
-    let dx = 0;
-    let dy = 0;
-
-    if (keysPressed['ArrowUp']) dy -= 1; // Move up
-    if (keysPressed['ArrowLeft']) dx -= 1; // Move left
-    if (keysPressed['ArrowDown']) dy += 1; // Move down
-    if (keysPressed['ArrowRight']) dx += 1; // Move right
-
+    if (playerId !== 2) return; // Only Player 2 controls scorpion2 direction
+    let dx = 0, dy = 0;
+    if (keysPressed['ArrowUp']) dy -= 1;
+    if (keysPressed['ArrowLeft']) dx -= 1;
+    if (keysPressed['ArrowDown']) dy += 1;
+    if (keysPressed['ArrowRight']) dx += 1;
     if (dx !== 0 || dy !== 0) {
-        scorpion2.direction = Math.atan2(dy, dx); // Calculate angle in radians
+        scorpion2.direction = Math.atan2(dy, dx);
     }
 }
 
@@ -1270,11 +1252,11 @@ function updateGameObjects(deltaTime) {
 }
 
 function handleGamepadInput() {
-    const gamepads = navigator.getGamepads(); // Get the list of connected gamepads
-    const gamepad1 = gamepads[0]; // Assume the first gamepad controls scorpion1
-    const gamepad2 = gamepads[1]; // Assume the second gamepad controls scorpion2
+    const gamepads = navigator.getGamepads();
+    const gamepad1 = gamepads[0];
+    const gamepad2 = gamepads[1];
 
-    if (gamepad1) {
+    if (gamepad1 && playerId === 1) {
         // Map the left stick for movement (scorpion1)
         const leftStickX = gamepad1.axes[0]; // Horizontal axis (-1 to 1)
         const leftStickY = gamepad1.axes[1]; // Vertical axis (-1 to 1)
@@ -1304,7 +1286,7 @@ function handleGamepadInput() {
         if (gamepad1.buttons[7].pressed) sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1); // Button Y for shooting a bullet
     }
 
-    if (gamepad2) {
+    if (gamepad2 && playerId === 2) {
         // Map the left stick for movement (scorpion2)
         const leftStickX = gamepad2.axes[0]; // Horizontal axis (-1 to 1)
         const leftStickY = gamepad2.axes[1]; // Vertical axis (-1 to 1)
@@ -1334,6 +1316,31 @@ function handleGamepadInput() {
         if (gamepad2.buttons[7].pressed) sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2); // Button Y for shooting a bullet
     }
 }
+
+const socket = io(); // Connect to Socket.IO server
+
+let playerId = null;
+
+// Listen for player ID assignment
+socket.on('playerId', (id) => {
+    playerId = id;
+    console.log('You are Player', playerId);
+});
+
+// Listen for the other player's movement
+socket.on('playerMove', (data) => {
+    if (data.player !== playerId) {
+        if (data.player === 1) {
+            scorpion1.x = data.x;
+            scorpion1.y = data.y;
+            scorpion1.direction = data.direction; // update direction
+        } else if (data.player === 2) {
+            scorpion2.x = data.x;
+            scorpion2.y = data.y;
+            scorpion2.direction = data.direction; // update direction
+        }
+    }
+});
 
 let lastTime = 0;
 
@@ -1374,17 +1381,24 @@ function gameLoop(timestamp) {
     drawBullet(bullet1);
     drawBullet(bullet2);
 
-    // Update velocity based on pressed keys for scorpion1
-    if (keysPressed['w']) scorpion1.vy -= scorpion1.speed; // Move up
-    if (keysPressed['a']) scorpion1.vx -= scorpion1.speed; // Move left
-    if (keysPressed['s']) scorpion1.vy += scorpion1.speed; // Move down
-    if (keysPressed['d']) scorpion1.vx += scorpion1.speed; // Move right
-
-    // Update velocity based on pressed keys for scorpion2
-    if (keysPressed['ArrowUp']) scorpion2.vy -= scorpion2.speed; // Move up
-    if (keysPressed['ArrowLeft']) scorpion2.vx -= scorpion2.speed; // Move left
-    if (keysPressed['ArrowDown']) scorpion2.vy += scorpion2.speed; // Move down
-    if (keysPressed['ArrowRight']) scorpion2.vx += scorpion2.speed; // Move right
+    if (playerId === 1) {
+        // Only Player 1 can move scorpion1
+        if (keysPressed['w']) scorpion1.vy -= scorpion1.speed;
+        if (keysPressed['a']) scorpion1.vx -= scorpion1.speed;
+        if (keysPressed['s']) scorpion1.vy += scorpion1.speed;
+        if (keysPressed['d']) scorpion1.vx += scorpion1.speed;
+        // After updating position, send to server (now includes direction)
+        socket.emit('playerMove', { player: 1, x: scorpion1.x, y: scorpion1.y, direction: scorpion1.direction });
+    }
+    if (playerId === 2) {
+        // Only Player 2 can move scorpion2
+        if (keysPressed['ArrowUp']) scorpion2.vy -= scorpion2.speed;
+        if (keysPressed['ArrowLeft']) scorpion2.vx -= scorpion2.speed;
+        if (keysPressed['ArrowDown']) scorpion2.vy += scorpion2.speed;
+        if (keysPressed['ArrowRight']) scorpion2.vx += scorpion2.speed;
+        // After updating position, send to server (now includes direction)
+        socket.emit('playerMove', { player: 2, x: scorpion2.x, y: scorpion2.y, direction: scorpion2.direction });
+    }
 
     // Apply friction to velocity for scorpion1
     scorpion1.vx *= scorpion1.friction;

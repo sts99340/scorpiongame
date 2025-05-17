@@ -15,18 +15,39 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'game.html')); // Serve game.html
 });
 
+let playerCount = 0;
+const playerSockets = {};
+
 // Handle WebSocket connections
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
+    playerCount++;
+    const playerId = playerCount <= 2 ? playerCount : null;
+    if (playerId) {
+        playerSockets[playerId] = socket;
+        socket.emit('playerId', playerId);
+        console.log(`Assigned Player ${playerId} to socket ${socket.id}`);
+    } else {
+        socket.emit('full');
+        socket.disconnect();
+        return;
+    }
 
-    // Broadcast player movements or actions to other players
-    socket.on('playerAction', (data) => {
-        socket.broadcast.emit('playerAction', data);
+    // Relay player movement to the other player
+    socket.on('playerMove', (data) => {
+        // data: { player, x, y }
+        // Send to the other player only
+        Object.entries(playerSockets).forEach(([id, s]) => {
+            if (s !== socket) {
+                s.emit('playerMove', data);
+            }
+        });
     });
 
     // Handle disconnection
     socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
+        console.log(`Player ${playerId} disconnected`);
+        delete playerSockets[playerId];
+        playerCount--;
     });
 });
 
