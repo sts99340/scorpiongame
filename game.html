@@ -13,7 +13,7 @@
     <audio id="backgroundmusic" src="audio/background.mp3" loop></audio>
     <h1>Scorpion Game</h1>
     <canvas id="gameCanvas" width="1200" height="600" style="border:1px solid black;"></canvas>
-    
+
     <div id="pauseMenu" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); color:white; font-size:3em; z-index:1000; justify-content:center; align-items:center; text-align:center;">
         <div>
             <p>Paused</p>
@@ -37,6 +37,11 @@
             <p id="player2score">0</p>
         </div>
     </div>
+
+    <footer>
+        <div id="cash"><img src="images/cash-payment.png" id="footerimage"></img><p>Cashapp $668ghe</p></div>
+        <a href="https://linkedin.com/in/samuel-storey-569220298/"><img src="images/linkedin.png" id="footerimage"></img></a>
+    </footer>
     <script src="/socket.io/socket.io.js"></script>
     <script src="game.js"></script>
 </body>

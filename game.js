@@ -1837,16 +1837,3 @@ function gameLoop(timestamp) {
 
     requestAnimationFrame(gameLoop);
 }
-
-function declareWinner(winner) {
-    winnerDeclared = true;
-    ball.visible = false; // Hide the ball
-
-    // Show the winner message
-    winnerMessage.style.display = 'flex';
-    winnerText.textContent = `Player ${winner} Wins!`;
-
-    // Optionally, you can play a sound or animation for the winner
-    playAudio('audio/win.wav'); // Win sound
-    // You can also add a confetti animation or similar effect here
-}
