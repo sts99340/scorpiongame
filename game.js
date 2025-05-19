@@ -1420,11 +1420,6 @@ const roomID = urlParams.get('code') || urlParams.get('roomID');
 socket.emit('joinRoom', roomID);
 
 // When sending events, include the roomID:
-socket.emit('playerMove', { player: playerId, x, y, direction, roomID });
-socket.emit('wave', { player: playerId, x, y, direction, roomID });
-socket.emit('bullet', { player: playerId, x, y, direction, roomID });
-socket.emit('ballUpdate', { x, y, vx, vy, visible, owner, roomID });
-
 let playerId = null;
 
 // Listen for player ID assignment
