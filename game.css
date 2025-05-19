@@ -11,6 +11,9 @@ body {
     font-style: normal;
     background-color: grey;
 }
+h1 {
+    padding-top: 50px;
+}
 
 canvas {
     border: 1px solid black;
@@ -39,7 +42,7 @@ canvas {
 
 form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     margin-top: 20px;
 }
@@ -51,26 +54,31 @@ input[type="text"] {
 }
 button {
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: red;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
+button:hover {
+    background-color: blue;
+}
 
 footer {
+    bottom: 0;
+    width: 100%;
     display: flex;
     flex-direction: row;
-    bottom: 10px;
+    justify-content: center;
     text-align: center;
     font-size: 14px;
     color: #333;
-    position-anchor: bottom;
-    position: fixed;
+    margin: 10px;
 }
 #cash {
     display: flex;
     flex-direction: row;
+    font-family:'Times New Roman', Times, serif;
 }
 
 #footerimage {
