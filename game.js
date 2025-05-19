@@ -1431,6 +1431,7 @@ let playerId = null;
 socket.on('playerId', (id) => {
     playerId = id;
     console.log('You are Player', playerId);
+    gameLoop(0); // Start the game loop only after playerId is set
 });
 
 // Listen for the other player's movement
@@ -1774,6 +1775,3 @@ function gameLoop(timestamp) {
 
     requestAnimationFrame(gameLoop);
 }
-
-// Start the game loop
-gameLoop(0);
