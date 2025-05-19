@@ -922,6 +922,23 @@ function updateScoreDisplay() {
     scorpion2ScoreElement.textContent = scorpion2.score;
 }
 
+function declareWinner(playerNum) {
+    winnerDeclared = true;
+    winnerText.textContent = `Player ${playerNum} Wins!`;
+    winnerMessage.style.display = 'flex';
+    playAudio('audio/score.wav'); // Or a special win sound
+
+    setTimeout(() => {
+        // Reset scores and restart game
+        scorpion1.score = 0;
+        scorpion2.score = 0;
+        updateScoreDisplay();
+        winnerMessage.style.display = 'none';
+        winnerDeclared = false;
+        resetGame();
+    }, 4000); // 4 seconds
+}
+
 // Function to make scorpion1 dash
 function dashScorpion1() {
     if (!canDashScorpion1) return; // Exit if scorpion1 is on cooldown
@@ -1304,7 +1321,24 @@ function updateGameObjects(deltaTime) {
 function handleGamepadInput() {
     const gamepads = navigator.getGamepads();
     const gamepad1 = gamepads[0];
-    const gamepad2 = gamepads[1];
+    const gamepad2 = gamepads[0];
+
+    // Pause/Resume on Start button (button 9)
+    if ((gamepad1 && gamepad1.buttons[9].pressed) || (gamepad2 && gamepad2.buttons[9].pressed)) {
+        if (!isPaused) {
+            isPaused = true;
+            pauseMenu.style.display = 'flex';
+        }
+    }
+
+    // Resume if paused and Start is pressed again
+    if (isPaused && ((gamepad1 && gamepad1.buttons[9].pressed) || (gamepad2 && gamepad2.buttons[9].pressed))) {
+        // Wait for button release to avoid instant unpause
+        setTimeout(() => {
+            isPaused = false;
+            pauseMenu.style.display = 'none';
+        }, 300); // Debounce to prevent flicker
+    }
 
     if (gamepad1 && playerId === 1) {
         // Map the left stick for movement (scorpion1)
@@ -1421,12 +1455,24 @@ socket.emit('joinRoom', roomID);
 
 // When sending events, include the roomID:
 let playerId = null;
+let gameStarted = false;
+
+let isPaused = false;
+const pauseMenu = document.getElementById('pauseMenu');
 
 // Listen for player ID assignment
 socket.on('playerId', (id) => {
     playerId = id;
     console.log('You are Player', playerId);
-    gameLoop(0); // Start the game loop only after playerId is set
+    // Do NOT start the game loop here!
+});
+
+// Listen for startGame event from server
+socket.on('startGame', () => {
+    if (!gameStarted) {
+        gameStarted = true;
+        gameLoop(0); // Now start the game loop
+    }
 });
 
 // Listen for the other player's movement
@@ -1504,10 +1550,18 @@ socket.on('ballUpdate', (data) => {
     scorpion2.hasBall = (data.owner === 2);
 });
 
+let winnerDeclared = false;
+const winnerMessage = document.getElementById('winnerMessage');
+const winnerText = document.getElementById('winnerText');
+
 let lastTime = 0;
 
 // Game loop to update and render the canvas
 function gameLoop(timestamp) {
+    if (isPaused) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
     const deltaTime = (timestamp - lastTime) / 1000; // Time in seconds
     lastTime = timestamp;
 
@@ -1720,37 +1774,53 @@ function gameLoop(timestamp) {
     }
 
     // Check collision between the ball and the green object
-    if (ball.visible && isCollidingWithGreenObject(ball, greenObject)) {
-        ball.visible = false; // Make the ball disappear
-        scorpion1.score += 1; // Increment scorpion1's score
-        updateScoreDisplay(); // Update the score display
-        resetGame(); // Reset the game
+    if (!winnerDeclared && ball.visible && isCollidingWithGreenObject(ball, greenObject)) {
+        ball.visible = false;
+        scorpion1.score += 1;
+        updateScoreDisplay();
+        if (scorpion1.score >= 7) {
+            declareWinner(1);
+        } else {
+            resetGame();
+        }
     }
+
     // Check collision between the ball and the yellow object
-    if (ball.visible && isCollidingWithGreenObject(ball, yellowObject)) {
-        ball.visible = false; // Make the ball disappear
-        scorpion2.score += 1; // Increment scorpion2's score
-        updateScoreDisplay(); // Update the score display
-        resetGame(); // Reset the game
+    if (!winnerDeclared && ball.visible && isCollidingWithGreenObject(ball, yellowObject)) {
+        ball.visible = false;
+        scorpion2.score += 1;
+        updateScoreDisplay();
+        if (scorpion2.score >= 7) {
+            declareWinner(2);
+        } else {
+            resetGame();
+        }
     }
 
     //Check for collision between scorpion and green object
-    if (isColliding(scorpion1, greenObject) && scorpion1.hasBall) {
-        ball.visible = false; // Make the ball disappear
-        scorpion1.score += 1; // Increment scorpion1's score
-        scorpion1.hasBall = false; // Reset hasBall to false
-        updateScoreDisplay(); // Update the score display
-        resetGame(); // Reset the game
-        
+    if (!winnerDeclared && isColliding(scorpion1, greenObject) && scorpion1.hasBall) {
+        ball.visible = false;
+        scorpion1.score += 1;
+        scorpion1.hasBall = false;
+        updateScoreDisplay();
+        if (scorpion1.score >= 7) {
+            declareWinner(1);
+        } else {
+            resetGame();
+        }
     }
 
     // Check for collision between scorpion2 and the yellow object
-    if (isColliding(scorpion2, yellowObject) && scorpion2.hasBall) {
-        ball.visible = false; // Make the ball disappear
-        scorpion2.score += 1; // Increment scorpion2's score
-        scorpion2.hasBall = false; // Reset hasBall to false
-        updateScoreDisplay(); // Update the score display
-        resetGame(); // Reset the game
+    if (!winnerDeclared && isColliding(scorpion2, yellowObject) && scorpion2.hasBall) {
+        ball.visible = false;
+        scorpion2.score += 1;
+        scorpion2.hasBall = false;
+        updateScoreDisplay();
+        if (scorpion2.score >= 7) {
+            declareWinner(2);
+        } else {
+            resetGame();
+        }
     }
 
     // Update the ball's position
@@ -1766,4 +1836,17 @@ function gameLoop(timestamp) {
     handleGamepadInput(); // Handle gamepad input
 
     requestAnimationFrame(gameLoop);
+}
+
+function declareWinner(winner) {
+    winnerDeclared = true;
+    ball.visible = false; // Hide the ball
+
+    // Show the winner message
+    winnerMessage.style.display = 'flex';
+    winnerText.textContent = `Player ${winner} Wins!`;
+
+    // Optionally, you can play a sound or animation for the winner
+    playAudio('audio/win.wav'); // Win sound
+    // You can also add a confetti animation or similar effect here
 }

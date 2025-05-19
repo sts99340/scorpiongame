@@ -16,15 +16,32 @@ app.get('/game.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'game.html'));
 });
 
+const rooms = {};
+
 io.on('connection', (socket) => {
-    // Join a room
     socket.on('joinRoom', (roomID) => {
         socket.join(roomID);
-        // Optionally, send back player number (1 or 2)
-        const clients = io.sockets.adapter.rooms.get(roomID);
-        const playerId = clients.size;
+
+        // Track players in the room
+        if (!rooms[roomID]) rooms[roomID] = [];
+        rooms[roomID].push(socket.id);
+
+        // Assign playerId (1 or 2)
+        const playerId = rooms[roomID].length;
         socket.emit('playerId', playerId);
-        // Notify others in the room if needed
+
+        // If both players have joined, notify both
+        if (rooms[roomID].length === 2) {
+            io.to(roomID).emit('startGame');
+        }
+
+        // Clean up on disconnect
+        socket.on('disconnect', () => {
+            if (rooms[roomID]) {
+                rooms[roomID] = rooms[roomID].filter(id => id !== socket.id);
+                if (rooms[roomID].length === 0) delete rooms[roomID];
+            }
+        });
     });
 
     // Relay events only to others in the same room
