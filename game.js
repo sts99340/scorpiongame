@@ -563,7 +563,8 @@ function releaseBall() {
             vx: ball.vx,
             vy: ball.vy,
             visible: ball.visible,
-            owner: null // No one owns after throw
+            owner: null, // No one owns after throw
+            roomID: roomID // Include the room ID
         });
     }
     else {
@@ -626,7 +627,8 @@ function releaseBallScorpion2() {
             vx: ball.vx,
             vy: ball.vy,
             visible: ball.visible,
-            owner: null // No one owns after throw
+            owner: null, // No one owns after throw
+            roomID: roomID // Include the room ID
         });
     }
     else {
@@ -794,7 +796,8 @@ document.addEventListener('keydown', (event) => {
             player: 1,
             x: scorpion1.x,
             y: scorpion1.y,
-            direction: scorpion1.direction
+            direction: scorpion1.direction,
+            roomID: roomID
         });
     }
     if (event.key === '2' && playerId === 2 && scorpion2.visible) {
@@ -803,7 +806,8 @@ document.addEventListener('keydown', (event) => {
             player: 2,
             x: scorpion2.x,
             y: scorpion2.y,
-            direction: scorpion2.direction
+            direction: scorpion2.direction,
+            roomID: roomID
         });
     }
 });
@@ -816,7 +820,8 @@ document.addEventListener('keydown', (event) => {
             player: 1,
             x: scorpion1.x,
             y: scorpion1.y,
-            direction: scorpion1.direction
+            direction: scorpion1.direction,
+            roomID: roomID
         });
     }
     if (event.key === '3' && playerId === 2) {
@@ -825,7 +830,8 @@ document.addEventListener('keydown', (event) => {
             player: 2,
             x: scorpion2.x,
             y: scorpion2.y,
-            direction: scorpion2.direction
+            direction: scorpion2.direction,
+            roomID: roomID
         });
     }
 });
@@ -1333,7 +1339,8 @@ function handleGamepadInput() {
                     player: 1,
                     x: scorpion1.x,
                     y: scorpion1.y,
-                    direction: scorpion1.direction
+                    direction: scorpion1.direction,
+                    roomID: roomID
                 });
             }
         }
@@ -1344,7 +1351,8 @@ function handleGamepadInput() {
                     player: 1,
                     x: scorpion1.x,
                     y: scorpion1.y,
-                    direction: scorpion1.direction
+                    direction: scorpion1.direction,
+                    roomID: roomID
                 });
             }
         }
@@ -1382,7 +1390,8 @@ function handleGamepadInput() {
                     player: 2,
                     x: scorpion2.x,
                     y: scorpion2.y,
-                    direction: scorpion2.direction
+                    direction: scorpion2.direction,
+                    roomID: roomID
                 });
             }
         }
@@ -1393,7 +1402,8 @@ function handleGamepadInput() {
                     player: 2,
                     x: scorpion2.x,
                     y: scorpion2.y,
-                    direction: scorpion2.direction
+                    direction: scorpion2.direction,
+                    roomID: roomID
                 });
             }
         }
