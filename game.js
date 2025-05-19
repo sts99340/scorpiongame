@@ -1513,9 +1513,6 @@ let lastTime = 0;
 
 // Game loop to update and render the canvas
 function gameLoop(timestamp) {
-    const backgroundMusic = document.getElementById('backgroundmusic');
-    backgroundMusic.play();
-    backgroundMusic.volume = 0.5; // Set the volume of the background music
     const deltaTime = (timestamp - lastTime) / 1000; // Time in seconds
     lastTime = timestamp;
 
