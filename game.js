@@ -1328,21 +1328,25 @@ function handleGamepadInput() {
         if (gamepad1.buttons[2].pressed) dashScorpion1(); // Button B for dashing
         if (gamepad1.buttons[6].pressed) {
             sendWave(scorpion1);
-            socket.emit('wave', {
-                player: 1,
-                x: scorpion1.x,
-                y: scorpion1.y,
-                direction: scorpion1.direction
-            });
+            if (canSendWaveScorpion1) {
+                socket.emit('wave', {
+                    player: 1,
+                    x: scorpion1.x,
+                    y: scorpion1.y,
+                    direction: scorpion1.direction
+                });
+            }
         }
         if (gamepad1.buttons[7].pressed) {
             sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
-            socket.emit('bullet', {
-                player: 1,
-                x: scorpion1.x,
-                y: scorpion1.y,
-                direction: scorpion1.direction
-            });
+                if (canShootBullet1) {
+                socket.emit('bullet', {
+                    player: 1,
+                    x: scorpion1.x,
+                    y: scorpion1.y,
+                    direction: scorpion1.direction
+                });
+            }
         }
     }
     if (gamepad2 && playerId === 2) {
@@ -1373,26 +1377,43 @@ function handleGamepadInput() {
         if (gamepad2.buttons[2].pressed) dashScorpion2(); // Button B for dashing
         if (gamepad2.buttons[6].pressed) {
             sendWave(scorpion2);
-            socket.emit('wave', {
-                player: 2,
-                x: scorpion2.x,
-                y: scorpion2.y,
-                direction: scorpion2.direction
-            });
+            if (canSendWaveScorpion2) {
+                socket.emit('wave', {
+                    player: 2,
+                    x: scorpion2.x,
+                    y: scorpion2.y,
+                    direction: scorpion2.direction
+                });
+            }
         }
         if (gamepad2.buttons[7].pressed) {
             sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
-            socket.emit('bullet', {
-                player: 2,
-                x: scorpion2.x,
-                y: scorpion2.y,
-                direction: scorpion2.direction
-            });
+            if (canShootBullet2) {
+                socket.emit('bullet', {
+                    player: 2,
+                    x: scorpion2.x,
+                    y: scorpion2.y,
+                    direction: scorpion2.direction
+                });
+            }
         }
     }
 }
 
-const socket = io(); // Connect to Socket.IO server
+const socket = io();
+
+// Get room code from URL
+const urlParams = new URLSearchParams(window.location.search);
+const roomID = urlParams.get('code') || urlParams.get('roomID');
+
+// Join the room
+socket.emit('joinRoom', roomID);
+
+// When sending events, include the roomID:
+socket.emit('playerMove', { player: playerId, x, y, direction, roomID });
+socket.emit('wave', { player: playerId, x, y, direction, roomID });
+socket.emit('bullet', { player: playerId, x, y, direction, roomID });
+socket.emit('ballUpdate', { x, y, vx, vy, visible, owner, roomID });
 
 let playerId = null;
 
@@ -1523,7 +1544,7 @@ function gameLoop(timestamp) {
         if (keysPressed['s']) scorpion1.vy += scorpion1.speed;
         if (keysPressed['d']) scorpion1.vx += scorpion1.speed;
         // After updating position, send to server (now includes direction)
-        socket.emit('playerMove', { player: 1, x: scorpion1.x, y: scorpion1.y, direction: scorpion1.direction });
+        socket.emit('playerMove', { player: 1, x: scorpion1.x, y: scorpion1.y, direction: scorpion1.direction, roomID });
     }
     if (playerId === 2) {
         // Only Player 2 can move scorpion2
@@ -1532,7 +1553,7 @@ function gameLoop(timestamp) {
         if (keysPressed['ArrowDown']) scorpion2.vy += scorpion2.speed;
         if (keysPressed['ArrowRight']) scorpion2.vx += scorpion2.speed;
         // After updating position, send to server (now includes direction)
-        socket.emit('playerMove', { player: 2, x: scorpion2.x, y: scorpion2.y, direction: scorpion2.direction });
+        socket.emit('playerMove', { player: 2, x: scorpion2.x, y: scorpion2.y, direction: scorpion2.direction, roomID });
     }
 
     // Apply friction to velocity for scorpion1
@@ -1673,7 +1694,8 @@ function gameLoop(timestamp) {
             vx: ball.vx,
             vy: ball.vy,
             visible: false,
-            owner: 1
+            owner: 1,
+            roomID
         });
     }
 
@@ -1689,7 +1711,8 @@ function gameLoop(timestamp) {
             vx: ball.vx,
             vy: ball.vy,
             visible: false,
-            owner: 2
+            owner: 2,
+            roomID
         });
     }
 
