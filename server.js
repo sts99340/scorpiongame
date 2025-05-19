@@ -43,6 +43,33 @@ io.on('connection', (socket) => {
         });
     });
 
+    // Relay wave event
+    socket.on('wave', (data) => {
+        Object.entries(playerSockets).forEach(([id, s]) => {
+            if (s !== socket) {
+                s.emit('wave', data);
+            }
+        });
+    });
+
+    // Relay bullet event
+    socket.on('bullet', (data) => {
+        Object.entries(playerSockets).forEach(([id, s]) => {
+            if (s !== socket) {
+                s.emit('bullet', data);
+            }
+        });
+    });
+
+    // Relay ball updates
+    socket.on('ballUpdate', (data) => {
+        Object.entries(playerSockets).forEach(([id, s]) => {
+            if (s !== socket) {
+                s.emit('ballUpdate', data);
+            }
+        });
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
         console.log(`Player ${playerId} disconnected`);

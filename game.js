@@ -555,6 +555,16 @@ function releaseBall() {
         setTimeout(() => {
             scorpion1.canPickUpBall = true;
         }, 170); // 170 milliseconds cooldown
+
+        // Emit ball update to server
+        socket.emit('ballUpdate', {
+            x: ball.x,
+            y: ball.y,
+            vx: ball.vx,
+            vy: ball.vy,
+            visible: ball.visible,
+            owner: null // No one owns after throw
+        });
     }
     else {
         // Temporarily show the spike
@@ -608,6 +618,16 @@ function releaseBallScorpion2() {
         setTimeout(() => {
             scorpion2.canPickUpBall = true;
         }, 170); // 170 milliseconds cooldown
+
+        // Emit ball update to server
+        socket.emit('ballUpdate', {
+            x: ball.x,
+            y: ball.y,
+            vx: ball.vx,
+            vy: ball.vy,
+            visible: ball.visible,
+            owner: null // No one owns after throw
+        });
     }
     else {
         // Temporarily show the spike
@@ -1342,6 +1362,66 @@ socket.on('playerMove', (data) => {
     }
 });
 
+// Listen for wave events
+socket.on('wave', (data) => {
+    if (data.player === 1) {
+        // Player 1's wave (show on player 2's screen)
+        wave1.visible = true;
+        wave1.x = data.x + scorpion1.width / 2;
+        wave1.y = data.y + scorpion1.height / 2;
+        wave1.originX = wave1.x;
+        wave1.originY = wave1.y;
+        const waveSpeed = 4;
+        wave1.vx = waveSpeed * Math.cos(data.direction);
+        wave1.vy = waveSpeed * Math.sin(data.direction);
+        wave1.width = 20;
+        wave1.height = 20;
+        wave1.ballHit = false;
+    } else if (data.player === 2) {
+        // Player 2's wave (show on player 1's screen)
+        wave2.visible = true;
+        wave2.x = data.x + scorpion2.width / 2;
+        wave2.y = data.y + scorpion2.height / 2;
+        wave2.originX = wave2.x;
+        wave2.originY = wave2.y;
+        const waveSpeed = 4;
+        wave2.vx = waveSpeed * Math.cos(data.direction);
+        wave2.vy = waveSpeed * Math.sin(data.direction);
+        wave2.width = 20;
+        wave2.height = 20;
+        wave2.ballHit = false;
+    }
+});
+
+socket.on('bullet', (data) => {
+    if (data.player === 1) {
+        bullet1.visible = true;
+        bullet1.x = data.x + scorpion1.width / 2;
+        bullet1.y = data.y + scorpion1.height / 2;
+        const bulletSpeed = 6;
+        bullet1.vx = bulletSpeed * Math.cos(data.direction);
+        bullet1.vy = bulletSpeed * Math.sin(data.direction);
+    } else if (data.player === 2) {
+        bullet2.visible = true;
+        bullet2.x = data.x + scorpion2.width / 2;
+        bullet2.y = data.y + scorpion2.height / 2;
+        const bulletSpeed = 6;
+        bullet2.vx = bulletSpeed * Math.cos(data.direction);
+        bullet2.vy = bulletSpeed * Math.sin(data.direction);
+    }
+});
+
+// Update ball state based on server data
+socket.on('ballUpdate', (data) => {
+    ball.x = data.x;
+    ball.y = data.y;
+    ball.vx = data.vx;
+    ball.vy = data.vy;
+    ball.visible = data.visible;
+    scorpion1.hasBall = (data.owner === 1);
+    scorpion2.hasBall = (data.owner === 2);
+});
+
 let lastTime = 0;
 
 // Game loop to update and render the canvas
@@ -1530,12 +1610,32 @@ function gameLoop(timestamp) {
     if (scorpion1.visible && ball.visible && scorpion1.canPickUpBall && isCollidingWithBall(scorpion1, ball)) {
         ball.visible = false; // Make the ball disappear
         scorpion1.hasBall = true; // Set hasBall to true
+
+        // Emit ball update to server
+        socket.emit('ballUpdate', {
+            x: ball.x,
+            y: ball.y,
+            vx: ball.vx,
+            vy: ball.vy,
+            visible: false,
+            owner: 1
+        });
     }
 
     // Check collision between scorpion2 and the ball
     if (scorpion2.visible && ball.visible && scorpion2.canPickUpBall && isCollidingWithBall(scorpion2, ball)) {
         ball.visible = false; // Make the ball disappear
         scorpion2.hasBall = true; // Set hasBall to true
+
+        // Emit ball update to server
+        socket.emit('ballUpdate', {
+            x: ball.x,
+            y: ball.y,
+            vx: ball.vx,
+            vy: ball.vy,
+            visible: false,
+            owner: 2
+        });
     }
 
     // Check collision between the ball and the green object
