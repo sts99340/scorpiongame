@@ -790,9 +790,21 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keydown', (event) => {
     if (event.key === 'e' && playerId === 1 && scorpion1.visible) {
         sendWave(scorpion1);
+        socket.emit('wave', {
+            player: 1,
+            x: scorpion1.x,
+            y: scorpion1.y,
+            direction: scorpion1.direction
+        });
     }
     if (event.key === '2' && playerId === 2 && scorpion2.visible) {
         sendWave(scorpion2);
+        socket.emit('wave', {
+            player: 2,
+            x: scorpion2.x,
+            y: scorpion2.y,
+            direction: scorpion2.direction
+        });
     }
 });
 
@@ -800,9 +812,21 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keydown', (event) => {
     if (event.key === 'r' && playerId === 1) {
         sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
+        socket.emit('bullet', {
+            player: 1,
+            x: scorpion1.x,
+            y: scorpion1.y,
+            direction: scorpion1.direction
+        });
     }
     if (event.key === '3' && playerId === 2) {
         sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
+        socket.emit('bullet', {
+            player: 2,
+            x: scorpion2.x,
+            y: scorpion2.y,
+            direction: scorpion2.direction
+        });
     }
 });
 
@@ -1302,10 +1326,25 @@ function handleGamepadInput() {
         // Map buttons for actions (scorpion1)
         if (gamepad1.buttons[0].pressed) releaseBall(); // Button A for releasing the ball
         if (gamepad1.buttons[2].pressed) dashScorpion1(); // Button B for dashing
-        if (gamepad1.buttons[6].pressed) sendWave(scorpion1); // Button X for sending a wave
-        if (gamepad1.buttons[7].pressed) sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1); // Button Y for shooting a bullet
+        if (gamepad1.buttons[6].pressed) {
+            sendWave(scorpion1);
+            socket.emit('wave', {
+                player: 1,
+                x: scorpion1.x,
+                y: scorpion1.y,
+                direction: scorpion1.direction
+            });
+        }
+        if (gamepad1.buttons[7].pressed) {
+            sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
+            socket.emit('bullet', {
+                player: 1,
+                x: scorpion1.x,
+                y: scorpion1.y,
+                direction: scorpion1.direction
+            });
+        }
     }
-
     if (gamepad2 && playerId === 2) {
         // Map the left stick for movement (scorpion2)
         const leftStickX = gamepad2.axes[0]; // Horizontal axis (-1 to 1)
@@ -1332,8 +1371,24 @@ function handleGamepadInput() {
         // Map buttons for actions (scorpion2)
         if (gamepad2.buttons[0].pressed) releaseBallScorpion2(); // Button A for releasing the ball
         if (gamepad2.buttons[2].pressed) dashScorpion2(); // Button B for dashing
-        if (gamepad2.buttons[6].pressed) sendWave(scorpion2); // Button X for sending a wave
-        if (gamepad2.buttons[7].pressed) sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2); // Button Y for shooting a bullet
+        if (gamepad2.buttons[6].pressed) {
+            sendWave(scorpion2);
+            socket.emit('wave', {
+                player: 2,
+                x: scorpion2.x,
+                y: scorpion2.y,
+                direction: scorpion2.direction
+            });
+        }
+        if (gamepad2.buttons[7].pressed) {
+            sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
+            socket.emit('bullet', {
+                player: 2,
+                x: scorpion2.x,
+                y: scorpion2.y,
+                direction: scorpion2.direction
+            });
+        }
     }
 }
 
