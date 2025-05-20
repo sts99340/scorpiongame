@@ -1490,13 +1490,12 @@ socket.on('playerMove', (data) => {
     }
 });
 
-// Listen for wave events
+
 socket.on('wave', (data) => {
     if (data.player === 1) {
-        // Player 1's wave (show on player 2's screen)
         wave1.visible = true;
-        wave1.x = data.x + scorpion1.width / 2;
-        wave1.y = data.y + scorpion1.height / 2;
+        wave1.x = data.x;
+        wave1.y = data.y;
         wave1.originX = wave1.x;
         wave1.originY = wave1.y;
         const waveSpeed = 4;
@@ -1506,10 +1505,9 @@ socket.on('wave', (data) => {
         wave1.height = 20;
         wave1.ballHit = false;
     } else if (data.player === 2) {
-        // Player 2's wave (show on player 1's screen)
         wave2.visible = true;
-        wave2.x = data.x + scorpion2.width / 2;
-        wave2.y = data.y + scorpion2.height / 2;
+        wave2.x = data.x;
+        wave2.y = data.y;
         wave2.originX = wave2.x;
         wave2.originY = wave2.y;
         const waveSpeed = 4;
@@ -1524,15 +1522,15 @@ socket.on('wave', (data) => {
 socket.on('bullet', (data) => {
     if (data.player === 1) {
         bullet1.visible = true;
-        bullet1.x = data.x + scorpion1.width / 2;
-        bullet1.y = data.y + scorpion1.height / 2;
+        bullet1.x = data.x;
+        bullet1.y = data.y;
         const bulletSpeed = 6;
         bullet1.vx = bulletSpeed * Math.cos(data.direction);
         bullet1.vy = bulletSpeed * Math.sin(data.direction);
     } else if (data.player === 2) {
         bullet2.visible = true;
-        bullet2.x = data.x + scorpion2.width / 2;
-        bullet2.y = data.y + scorpion2.height / 2;
+        bullet2.x = data.x;
+        bullet2.y = data.y;
         const bulletSpeed = 6;
         bullet2.vx = bulletSpeed * Math.cos(data.direction);
         bullet2.vy = bulletSpeed * Math.sin(data.direction);
