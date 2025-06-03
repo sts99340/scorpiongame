@@ -1617,14 +1617,6 @@ function gameLoop(timestamp) {
     scorpion2.vx *= scorpion2.friction;
     scorpion2.vy *= scorpion2.friction;
 
-    // Update position based on velocity for scorpion1
-    scorpion1.x += scorpion1.vx;
-    scorpion1.y += scorpion1.vy;
-
-    // Update position based on velocity for scorpion2
-    scorpion2.x += scorpion2.vx;
-    scorpion2.y += scorpion2.vy;
-
     // Prevent scorpions from going out of bounds
     if (scorpion1.x < 0) scorpion1.x = 0;
     if (scorpion1.x + scorpion1.width > canvas.width) scorpion1.x = canvas.width - scorpion1.width;
