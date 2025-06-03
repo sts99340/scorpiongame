@@ -794,8 +794,8 @@ document.addEventListener('keydown', (event) => {
         sendWave(scorpion1);
         socket.emit('wave', {
             player: 1,
-            x: scorpion1.x,
-            y: scorpion1.y,
+            x: scorpion1.x + scorpion1.width / 2, // Use center
+            y: scorpion1.y + scorpion1.height / 2,
             direction: scorpion1.direction,
             roomID: roomID
         });
@@ -804,8 +804,8 @@ document.addEventListener('keydown', (event) => {
         sendWave(scorpion2);
         socket.emit('wave', {
             player: 2,
-            x: scorpion2.x,
-            y: scorpion2.y,
+            x: scorpion2.x + scorpion2.width / 2, // Use center
+            y: scorpion2.y + scorpion2.height / 2,
             direction: scorpion2.direction,
             roomID: roomID
         });
@@ -818,8 +818,8 @@ document.addEventListener('keydown', (event) => {
         sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
         socket.emit('bullet', {
             player: 1,
-            x: scorpion1.x,
-            y: scorpion1.y,
+            x: scorpion1.x + scorpion1.width / 2, // Use center
+            y: scorpion1.y + scorpion1.height / 2,
             direction: scorpion1.direction,
             roomID: roomID
         });
@@ -828,8 +828,8 @@ document.addEventListener('keydown', (event) => {
         sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
         socket.emit('bullet', {
             player: 2,
-            x: scorpion2.x,
-            y: scorpion2.y,
+            x: scorpion2.x + scorpion2.width / 2, // Use center
+            y: scorpion2.y + scorpion2.height / 2,
             direction: scorpion2.direction,
             roomID: roomID
         });
@@ -1371,8 +1371,8 @@ function handleGamepadInput() {
             if (canSendWaveScorpion1) {
                 socket.emit('wave', {
                     player: 1,
-                    x: scorpion1.x,
-                    y: scorpion1.y,
+                    x: scorpion1.x + scorpion1.width / 2,
+                    y: scorpion1.y + scorpion1.height / 2,
                     direction: scorpion1.direction,
                     roomID: roomID
                 });
@@ -1380,11 +1380,11 @@ function handleGamepadInput() {
         }
         if (gamepad1.buttons[7].pressed) {
             sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
-                if (canShootBullet1) {
+            if (canShootBullet1) {
                 socket.emit('bullet', {
                     player: 1,
-                    x: scorpion1.x,
-                    y: scorpion1.y,
+                    x: scorpion1.x + scorpion1.width / 2,
+                    y: scorpion1.y + scorpion1.height / 2,
                     direction: scorpion1.direction,
                     roomID: roomID
                 });
@@ -1422,8 +1422,8 @@ function handleGamepadInput() {
             if (canSendWaveScorpion2) {
                 socket.emit('wave', {
                     player: 2,
-                    x: scorpion2.x,
-                    y: scorpion2.y,
+                    x: scorpion2.x + scorpion2.width / 2,
+                    y: scorpion2.y + scorpion2.height / 2,
                     direction: scorpion2.direction,
                     roomID: roomID
                 });
@@ -1434,8 +1434,8 @@ function handleGamepadInput() {
             if (canShootBullet2) {
                 socket.emit('bullet', {
                     player: 2,
-                    x: scorpion2.x,
-                    y: scorpion2.y,
+                    x: scorpion2.x + scorpion2.width / 2,
+                    y: scorpion2.y + scorpion2.height / 2,
                     direction: scorpion2.direction,
                     roomID: roomID
                 });
@@ -1712,6 +1712,7 @@ function gameLoop(timestamp) {
             const overlapX = Math.min(
                 scorpion2.x + scorpion2.width - obj.x,
                 obj.x + obj.width - scorpion2.x
+           
             );
 
             const overlapY = Math.min(
