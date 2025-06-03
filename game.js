@@ -791,10 +791,10 @@ document.addEventListener('keydown', (event) => {
 // Wave (E for player 1, 2 for player 2)
 document.addEventListener('keydown', (event) => {
     if (event.key === 'e' && playerId === 1 && scorpion1.visible) {
-        sendWave(scorpion1);
+        sendWave(scorpion1); // Only local
         socket.emit('wave', {
             player: 1,
-            x: scorpion1.x + scorpion1.width / 2, // Use center
+            x: scorpion1.x + scorpion1.width / 2,
             y: scorpion1.y + scorpion1.height / 2,
             direction: scorpion1.direction,
             roomID: roomID
@@ -818,7 +818,7 @@ document.addEventListener('keydown', (event) => {
         sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
         socket.emit('bullet', {
             player: 1,
-            x: scorpion1.x + scorpion1.width / 2, // Use center
+            x: scorpion1.x + scorpion1.width / 2,
             y: scorpion1.y + scorpion1.height / 2,
             direction: scorpion1.direction,
             roomID: roomID
@@ -828,7 +828,7 @@ document.addEventListener('keydown', (event) => {
         sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
         socket.emit('bullet', {
             player: 2,
-            x: scorpion2.x + scorpion2.width / 2, // Use center
+            x: scorpion2.x + scorpion2.width / 2,
             y: scorpion2.y + scorpion2.height / 2,
             direction: scorpion2.direction,
             roomID: roomID
@@ -1492,48 +1492,54 @@ socket.on('playerMove', (data) => {
 
 
 socket.on('wave', (data) => {
-    if (data.player === 1) {
-        wave1.visible = true;
-        wave1.x = data.x;
-        wave1.y = data.y;
-        wave1.originX = wave1.x;
-        wave1.originY = wave1.y;
-        const waveSpeed = 4;
-        wave1.vx = waveSpeed * Math.cos(data.direction);
-        wave1.vy = waveSpeed * Math.sin(data.direction);
-        wave1.width = 20;
-        wave1.height = 20;
-        wave1.ballHit = false;
-    } else if (data.player === 2) {
-        wave2.visible = true;
-        wave2.x = data.x;
-        wave2.y = data.y;
-        wave2.originX = wave2.x;
-        wave2.originY = wave2.y;
-        const waveSpeed = 4;
-        wave2.vx = waveSpeed * Math.cos(data.direction);
-        wave2.vy = waveSpeed * Math.sin(data.direction);
-        wave2.width = 20;
-        wave2.height = 20;
-        wave2.ballHit = false;
+    // Only process if the event is from the other player
+    if (data.player !== playerId) {
+        if (data.player === 1) {
+            wave1.visible = true;
+            wave1.x = data.x;
+            wave1.y = data.y;
+            wave1.originX = wave1.x;
+            wave1.originY = wave1.y;
+            const waveSpeed = 4;
+            wave1.vx = waveSpeed * Math.cos(data.direction);
+            wave1.vy = waveSpeed * Math.sin(data.direction);
+            wave1.width = 20;
+            wave1.height = 20;
+            wave1.ballHit = false;
+        } else if (data.player === 2) {
+            wave2.visible = true;
+            wave2.x = data.x;
+            wave2.y = data.y;
+            wave2.originX = wave2.x;
+            wave2.originY = wave2.y;
+            const waveSpeed = 4;
+            wave2.vx = waveSpeed * Math.cos(data.direction);
+            wave2.vy = waveSpeed * Math.sin(data.direction);
+            wave2.width = 20;
+            wave2.height = 20;
+            wave2.ballHit = false;
+        }
     }
 });
 
 socket.on('bullet', (data) => {
-    if (data.player === 1) {
-        bullet1.visible = true;
-        bullet1.x = data.x;
-        bullet1.y = data.y;
-        const bulletSpeed = 6;
-        bullet1.vx = bulletSpeed * Math.cos(data.direction);
-        bullet1.vy = bulletSpeed * Math.sin(data.direction);
-    } else if (data.player === 2) {
-        bullet2.visible = true;
-        bullet2.x = data.x;
-        bullet2.y = data.y;
-        const bulletSpeed = 6;
-        bullet2.vx = bulletSpeed * Math.cos(data.direction);
-        bullet2.vy = bulletSpeed * Math.sin(data.direction);
+    // Only process if the event is from the other player
+    if (data.player !== playerId) {
+        if (data.player === 1) {
+            bullet1.visible = true;
+            bullet1.x = data.x;
+            bullet1.y = data.y;
+            const bulletSpeed = 6;
+            bullet1.vx = bulletSpeed * Math.cos(data.direction);
+            bullet1.vy = bulletSpeed * Math.sin(data.direction);
+        } else if (data.player === 2) {
+            bullet2.visible = true;
+            bullet2.x = data.x;
+            bullet2.y = data.y;
+            const bulletSpeed = 6;
+            bullet2.vx = bulletSpeed * Math.cos(data.direction);
+            bullet2.vy = bulletSpeed * Math.sin(data.direction);
+        }
     }
 });
 
@@ -1712,7 +1718,6 @@ function gameLoop(timestamp) {
             const overlapX = Math.min(
                 scorpion2.x + scorpion2.width - obj.x,
                 obj.x + obj.width - scorpion2.x
-           
             );
 
             const overlapY = Math.min(
