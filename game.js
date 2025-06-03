@@ -790,7 +790,7 @@ document.addEventListener('keydown', (event) => {
 
 // Wave (E for player 1, 2 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'e' && playerId === 1 && scorpion1.visible) {
+    if (event.key === 'e' && playerId === 1 && scorpion1.visible && canSendWaveScorpion1) {
         sendWave(scorpion1); // Only local
         socket.emit('wave', {
             player: 1,
@@ -800,11 +800,11 @@ document.addEventListener('keydown', (event) => {
             roomID: roomID
         });
     }
-    if (event.key === '2' && playerId === 2 && scorpion2.visible) {
+    if (event.key === '2' && playerId === 2 && scorpion2.visible && canSendWaveScorpion2) {
         sendWave(scorpion2);
         socket.emit('wave', {
             player: 2,
-            x: scorpion2.x + scorpion2.width / 2, // Use center
+            x: scorpion2.x + scorpion2.width / 2,
             y: scorpion2.y + scorpion2.height / 2,
             direction: scorpion2.direction,
             roomID: roomID
@@ -814,7 +814,7 @@ document.addEventListener('keydown', (event) => {
 
 // Bullet (R for player 1, 3 for player 2)
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'r' && playerId === 1) {
+    if (event.key === 'r' && playerId === 1 && canShootBullet1) {
         sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
         socket.emit('bullet', {
             player: 1,
@@ -824,7 +824,7 @@ document.addEventListener('keydown', (event) => {
             roomID: roomID
         });
     }
-    if (event.key === '3' && playerId === 2) {
+    if (event.key === '3' && playerId === 2 && canShootBullet2) {
         sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
         socket.emit('bullet', {
             player: 2,
@@ -1366,29 +1366,25 @@ function handleGamepadInput() {
         // Map buttons for actions (scorpion1)
         if (gamepad1.buttons[0].pressed) releaseBall(); // Button A for releasing the ball
         if (gamepad1.buttons[2].pressed) dashScorpion1(); // Button B for dashing
-        if (gamepad1.buttons[6].pressed) {
+        if (gamepad1.buttons[6].pressed && canSendWaveScorpion1) {
             sendWave(scorpion1);
-            if (canSendWaveScorpion1) {
-                socket.emit('wave', {
-                    player: 1,
-                    x: scorpion1.x + scorpion1.width / 2,
-                    y: scorpion1.y + scorpion1.height / 2,
-                    direction: scorpion1.direction,
-                    roomID: roomID
-                });
-            }
+            socket.emit('wave', {
+                player: 1,
+                x: scorpion1.x + scorpion1.width / 2,
+                y: scorpion1.y + scorpion1.height / 2,
+                direction: scorpion1.direction,
+                roomID: roomID
+            });
         }
-        if (gamepad1.buttons[7].pressed) {
+        if (gamepad1.buttons[7].pressed && canShootBullet1) {
             sendBullet(scorpion1, bullet1, canShootBullet1, startBulletCooldown1);
-            if (canShootBullet1) {
-                socket.emit('bullet', {
-                    player: 1,
-                    x: scorpion1.x + scorpion1.width / 2,
-                    y: scorpion1.y + scorpion1.height / 2,
-                    direction: scorpion1.direction,
-                    roomID: roomID
-                });
-            }
+            socket.emit('bullet', {
+                player: 1,
+                x: scorpion1.x + scorpion1.width / 2,
+                y: scorpion1.y + scorpion1.height / 2,
+                direction: scorpion1.direction,
+                roomID: roomID
+            });
         }
     }
     if (gamepad2 && playerId === 2) {
@@ -1417,29 +1413,25 @@ function handleGamepadInput() {
         // Map buttons for actions (scorpion2)
         if (gamepad2.buttons[0].pressed) releaseBallScorpion2(); // Button A for releasing the ball
         if (gamepad2.buttons[2].pressed) dashScorpion2(); // Button B for dashing
-        if (gamepad2.buttons[6].pressed) {
+        if (gamepad2.buttons[6].pressed && canSendWaveScorpion2) {
             sendWave(scorpion2);
-            if (canSendWaveScorpion2) {
-                socket.emit('wave', {
-                    player: 2,
-                    x: scorpion2.x + scorpion2.width / 2,
-                    y: scorpion2.y + scorpion2.height / 2,
-                    direction: scorpion2.direction,
-                    roomID: roomID
-                });
-            }
+            socket.emit('wave', {
+                player: 2,
+                x: scorpion2.x + scorpion2.width / 2,
+                y: scorpion2.y + scorpion2.height / 2,
+                direction: scorpion2.direction,
+                roomID: roomID
+            });
         }
-        if (gamepad2.buttons[7].pressed) {
+        if (gamepad2.buttons[7].pressed && canShootBullet2) {
             sendBullet(scorpion2, bullet2, canShootBullet2, startBulletCooldown2);
-            if (canShootBullet2) {
-                socket.emit('bullet', {
-                    player: 2,
-                    x: scorpion2.x + scorpion2.width / 2,
-                    y: scorpion2.y + scorpion2.height / 2,
-                    direction: scorpion2.direction,
-                    roomID: roomID
-                });
-            }
+            socket.emit('bullet', {
+                player: 2,
+                x: scorpion2.x + scorpion2.width / 2,
+                y: scorpion2.y + scorpion2.height / 2,
+                direction: scorpion2.direction,
+                roomID: roomID
+            });
         }
     }
 }
