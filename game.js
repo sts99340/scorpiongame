@@ -1041,11 +1041,11 @@ function sendWave(scorpion) {
     }
 }
 
-function updateWave(wave) {
+function updateWave(wave, deltaTime = 1) {
     if (wave.visible) {
         // Update the wave's position
-        wave.x += wave.vx;
-        wave.y += wave.vy;
+        wave.x += wave.vx * deltaTime;
+        wave.y += wave.vy * deltaTime;
 
         // Calculate the distance from the wave's origin (scorpion's center)
         const scorpionCenterX = wave.originX;
@@ -1198,11 +1198,11 @@ function startBulletCooldown2() {
 }
 
 // Function to update the bullet's position
-function updateBullet(bullet) {
+function updateBullet(bullet, deltaTime = 1) {
     if (bullet.visible) {
         // Update the bullet's position
-        bullet.x += bullet.vx;
-        bullet.y += bullet.vy;
+        bullet.x += bullet.vx * deltaTime;
+        bullet.y += bullet.vy * deltaTime;
 
         // Hide the bullet if it goes out of bounds
         if (
@@ -1558,7 +1558,7 @@ function gameLoop(timestamp) {
         requestAnimationFrame(gameLoop);
         return;
     }
-    const deltaTime = (timestamp - lastTime) / 1000; // Time in seconds
+    const deltaTime = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
 
     clearCanvas();
@@ -1576,11 +1576,11 @@ function gameLoop(timestamp) {
 
     checkBulletCollision();
 
-    updateWave(wave1);
-    updateWave(wave2);
+    updateWave(wave1, deltaTime);
+    updateWave(wave2, deltaTime);
 
-    updateBullet(bullet1);
-    updateBullet(bullet2);
+    updateBullet(bullet1, deltaTime);
+    updateBullet(bullet2, deltaTime);
 
     // Draw the waves
     drawWave(wave1);
