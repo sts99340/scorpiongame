@@ -9,7 +9,7 @@ const scorpion1 = {
     width: 30,
     height: 30,
     color: '#FF073A',
-    speed: 0.1, // Acceleration speed
+    speed: 3, // Increase from 0.1 to 3
     vx: 0, // Velocity in the x direction
     vy: 0, // Velocity in the y direction
     friction: 0.9, // Friction coefficient (0 < friction < 1)
@@ -27,7 +27,7 @@ const scorpion2 = {
     width: 30,
     height: 30,
     color: '#00FFFF',
-    speed: 0.1, // Acceleration speed
+    speed: 3, // Increase from 0.1 to 3
     vx: 0, // Velocity in the x direction
     vy: 0, // Velocity in the y direction
     friction: 0.9, // Friction coefficient (0 < friction < 1)
