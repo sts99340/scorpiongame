@@ -1554,6 +1554,11 @@ let lastTime = 0;
 
 // Game loop to update and render the canvas
 function gameLoop(timestamp) {
+    if (!gameStarted) {
+        drawWaitingMessage();
+        requestAnimationFrame(gameLoop);
+        return;
+    }
     if (isPaused) {
         requestAnimationFrame(gameLoop);
         return;
@@ -1819,9 +1824,18 @@ function gameLoop(timestamp) {
     if (scorpion2.visible) drawScorpion2();
 
     // Draw the ball
-    drawBall();
-
+    drawBall(); scorpions
+    if (scorpion1.visible) drawScorpion();
     handleGamepadInput(); // Handle gamepad input
 
     requestAnimationFrame(gameLoop);
+}
+
+function drawWaitingMessage() {
+    clearCanvas();
+    ctx.fillStyle = 'white';
+    ctx.font = '36px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Waiting for other player...', canvas.width / 2, canvas.height / 2);
 }
